@@ -28,7 +28,10 @@
                 </div>
                 <div
                   class="product-thumbs"
-                  v-if="productDetails.galeries.length > 0"
+                  v-if="
+                    productDetails.galeries &&
+                    productDetails.galeries.length > 1
+                  "
                 >
                   <carousel
                     class="product-thumbs-track ps-slider"
@@ -60,14 +63,24 @@
                       vel, pariatur modi hic provident eum iure natus quos non a
                       sequi, id accusantium! Autem.
                     </p>
-                    <p>
-                      {{ productDetails.description }}
-                    </p>
+                    <p v-html="productDetails.description"></p>
                     <h4>${{ productDetails.price }}</h4>
                   </div>
                   <div class="quantity">
-                    <router-link to="/cart" class="primary-btn pd-cart"
-                      >Add To Cart</router-link
+                    <!-- <router-link to="/cart" class="primary-btn pd-cart"
+                      >Add To Cart</router-link -->
+                    <a
+                      @click="
+                        saveCart(
+                          productDetails.id,
+                          productDetails.name,
+                          productDetails.price,
+                          productDetails.galeries[0].photo
+                        )
+                      "
+                      href="#"
+                      class="primary-btn pd-cart"
+                      >Add To Cart</a
                     >
                   </div>
                 </div>
@@ -105,8 +118,8 @@ export default {
   data() {
     return {
       gambar_default: "",
-      thumbs: [],
       productDetails: [],
+      cartUser: [],
     };
   },
 
@@ -119,9 +132,29 @@ export default {
       this.productDetails = data;
       this.gambar_default = data.galeries[0].photo;
     },
+
+    saveCart(idProduct, productName, productPrice, productPhoto) {
+      let productStored = {
+        id: idProduct,
+        name: productName,
+        price: productPrice,
+        photo: productPhoto,
+      };
+
+      this.cartUser.push(productStored);
+      const parsed = JSON.stringify(this.cartUser);
+      localStorage.setItem("cartUser", parsed);
+    },
   },
 
   mounted() {
+    if (localStorage.getItem("cartUser")) {
+      try {
+        this.cartUser = JSON.parse(localStorage.getItem("cartUser"));
+      } catch (e) {
+        localStorage.removeItem("cartUser");
+      }
+    }
     axios
       .get("http://127.0.0.1:8000/api/products/", {
         params: {
