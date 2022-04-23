@@ -34,19 +34,7 @@
                       </tr>
                     </thead>
                     <tbody>
-                      <tr>
-                        <td class="cart-pic first-row">
-                          <img src="img/cart-page/product-1.jpg" />
-                        </td>
-                        <td class="cart-title first-row text-center">
-                          <h5>Pure Pineapple</h5>
-                        </td>
-                        <td class="p-price first-row">$60.00</td>
-                        <td class="delete-item">
-                          <a href="#"><i class="material-icons"> close </i></a>
-                        </td>
-                      </tr>
-                      <tr>
+                      <tr v-for="cart in cartUser" :key="cart.id">
                         <td class="cart-pic first-row">
                           <img src="img/cart-page/product-1.jpg" />
                         </td>
@@ -154,6 +142,27 @@ export default {
   name: "CartView",
   components: {
     HeaderBeetwen,
+  },
+  data() {
+    return {
+      cartUser: [],
+    };
+  },
+  methods: {
+    removeItem(index) {
+      this.cartUser.splice(index, 1);
+      const parsed = JSON.stringify(this.cartUser);
+      localStorage.setItem("cartUser", parsed);
+    },
+  },
+  mounted() {
+    if (localStorage.getItem("cartUser")) {
+      try {
+        this.cartUser = JSON.parse(localStorage.getItem("cartUser"));
+      } catch (e) {
+        localStorage.removeItem("cartUser");
+      }
+    }
   },
 };
 </script>

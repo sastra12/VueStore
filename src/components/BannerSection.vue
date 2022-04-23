@@ -19,7 +19,17 @@
               <div class="pi-pic">
                 <img v-bind:src="productItem.galeries[0].photo" alt="" />
                 <ul>
-                  <li class="w-icon active">
+                  <li
+                    @click="
+                      saveCart(
+                        productItem.id,
+                        productItem.name,
+                        productItem.price,
+                        productItem.galeries[0].photo
+                      )
+                    "
+                    class="w-icon active"
+                  >
                     <a href="#"><i class="icon_bag_alt"></i></a>
                   </li>
                   <li class="quick-view">
@@ -63,7 +73,22 @@ export default {
   data() {
     return {
       products: [],
+      cartUser: [],
     };
+  },
+  methods: {
+    saveCart(idProduct, productName, productPrice, productPhoto) {
+      let productStored = {
+        id: idProduct,
+        name: productName,
+        price: productPrice,
+        photo: productPhoto,
+      };
+
+      this.cartUser.push(productStored);
+      const parsed = JSON.stringify(this.cartUser);
+      localStorage.setItem("cartUser", parsed);
+    },
   },
   mounted() {
     axios
